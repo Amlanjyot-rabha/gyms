@@ -1,0 +1,22 @@
+.app-error {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  width: min(28rem, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.app-error__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.app-error__desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}

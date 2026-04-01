@@ -1,0 +1,80 @@
+.contact__grid {
+  display: grid;
+  gap: 1.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-bottom: 2rem;
+}
+
+.contact__block {
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.contact__h {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.contact__link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
+  transition: color var(--transition);
+}
+
+.contact__link:last-child {
+  margin-bottom: 0;
+}
+
+.contact__link:hover {
+  color: var(--color-accent);
+}
+
+.contact__hours {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.contact__hours li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+.contact__hours li span:first-child {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.contact__line {
+  margin: 0 0 0.25rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.contact__map {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.contact__map-placeholder {
+  min-height: 220px;
+  background:
+    linear-gradient(135deg, var(--color-surface-muted) 0%, var(--color-surface) 100%),
+    radial-gradient(circle at 40% 45%, color-mix(in srgb, var(--color-accent) 25%, transparent) 0%, transparent 55%);
+}

@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap');
+
+:root {
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --max-width: 1120px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --space-lg: 1.35rem;
+  --space-xl: clamp(1.25rem, 4vw, 2.5rem);
+  --transition: 0.2s ease;
+  --shadow-soft: 0 24px 60px color-mix(in srgb, #0a0c0f 12%, transparent);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+[data-theme='light'] {
+  --color-bg: #f6f4f1;
+  --color-surface: #fffefb;
+  --color-surface-muted: #ebe8e3;
+  --color-surface-elevated: #fffefb;
+  --color-text: #141820;
+  --color-text-muted: #5c6470;
+  --color-border: #e0dbd3;
+  --color-accent: #c45c2d;
+  --color-accent-muted: color-mix(in srgb, #c45c2d 45%, #141820);
+  --color-accent-contrast: #fffefb;
+  --color-focus: #1a67ff;
+}
+
+[data-theme='dark'] {
+  --color-bg: #0c0e12;
+  --color-surface: #13161c;
+  --color-surface-muted: #191d25;
+  --color-surface-elevated: #1b2029;
+  --color-text: #eef1f5;
+  --color-text-muted: #9aa3b2;
+  --color-border: #2a303c;
+  --color-accent: #e07a4a;
+  --color-accent-muted: color-mix(in srgb, #e07a4a 50%, #eef1f5);
+  --color-accent-contrast: #0c0e12;
+  --color-focus: #6aa9ff;
+}
+
+#root {
+  min-height: 100vh;
+}

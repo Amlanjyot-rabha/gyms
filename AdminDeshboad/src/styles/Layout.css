@@ -1,0 +1,44 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.layout-body {
+  display: flex;
+  margin-top: 60px; /* To account for the fixed Navbar height */
+  flex-grow: 1;
+}
+
+.layout-content {
+  flex-grow: 1;
+  padding: 2rem;
+  margin-left: 240px; /* To account for the fixed Sidebar width on desktop */
+  transition: margin-left 0.3s ease;
+  min-height: calc(100vh - 60px);
+}
+
+/* Sidebar overlay for mobile when drawer is open */
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .layout-content {
+    margin-left: 0; /* Reset margin on mobile */
+    padding: 1rem;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050; /* Above navbar but below open sidebar */
+  }
+}

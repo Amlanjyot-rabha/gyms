@@ -1,0 +1,51 @@
+.testimonials__grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.quote-card {
+  min-height: 100%;
+}
+
+.quote-card__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 100%;
+}
+
+.quote-card__stars {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+}
+
+.quote-card__quote {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--color-text);
+  font-style: normal;
+  flex: 1;
+}
+
+.quote-card__cite {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+}
+
+.quote-card__name {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.quote-card__role {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
