@@ -36,8 +36,8 @@ app.use(cookieParser());
 // Enable CORS — all three frontend apps + common Vite dev ports
 const corsOptions = {
   origin: [
-    'admin-dashboard-pa7w.onrender.com',  // admin dashboard (primary)
-    'content-management-system-yv4g.onrender.com',  // admin dashboard (alternate)
+    'https://admin-dashboard-pa7w.onrender.com',  // admin dashboard (primary)
+    'https://content-management-system-yv4g.onrender.com',  // admin dashboard (alternate)
     'https://member-portal-78vo.onrender.com',  // member portal
     // Vite preview
   ],
