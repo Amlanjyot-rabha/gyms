@@ -36,12 +36,10 @@ app.use(cookieParser());
 // Enable CORS — all three frontend apps + common Vite dev ports
 const corsOptions = {
   origin: [
-    'http://localhost:5173',  // admin dashboard (primary)
-    'http://localhost:5174',  // admin dashboard (alternate)
-    'http://localhost:5175',  // member portal
-    'http://localhost:5176',  // CMS site
-    'http://localhost:5177',  // CMS site (alternate)
-    'http://localhost:4173',  // Vite preview
+    'admin-dashboard-pa7w.onrender.com',  // admin dashboard (primary)
+    'content-management-system-yv4g.onrender.com',  // admin dashboard (alternate)
+    'https://member-portal-78vo.onrender.com',  // member portal
+    // Vite preview
   ],
   credentials: true           // Required for HttpOnly cookies cross-origin
 };
