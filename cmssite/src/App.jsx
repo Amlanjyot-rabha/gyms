@@ -4,11 +4,17 @@ import { PageSkeleton } from './components/PageSkeleton'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
 import { useGymData } from './hooks/useGymData'
 import { HomePage } from './pages/HomePage'
+import { useEffect } from 'react'
 import './App.css'
 
 function AppShell() {
   const { data, loading, error, refetch } = useGymData()
   const { theme, toggleTheme } = useTheme()
+
+  // Force the dark theme permanently — the site is designed dark-only
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+  }, [])
 
   if (loading && !data) {
     return <PageSkeleton ariaLabel={gymData.loading.ariaBusyLabel} />

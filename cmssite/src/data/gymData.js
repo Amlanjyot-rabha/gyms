@@ -272,6 +272,9 @@ export const gymData = {
     href: '#main-content',
     label: 'Skip to main content',
   },
+  // ── New fields (backward-compatible defaults) ──────────────
+  siteStatus: 'open',   // 'open' | 'closed'
+  banners: [],          // promotional banner slider items
 }
 
 /**

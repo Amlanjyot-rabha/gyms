@@ -47,4 +47,6 @@ const gymSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model('Gym', gymSchema);
+const Gym = mongoose.models.Gym || mongoose.model("Gym", gymSchema);
+
+export default Gym;

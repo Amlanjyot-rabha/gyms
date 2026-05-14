@@ -1,51 +1,60 @@
+/* ════════════════════════════════
+   Section — shared layout wrapper
+   ════════════════════════════════ */
+
 .section {
-  padding-block: clamp(3.5rem, 8vw, 6.5rem);
-  scroll-margin-top: 5.5rem;
+  position: relative;
+  /* Note: no overflow:hidden — it clips absolute badges/decorations in children */
 }
 
+/* ── Tone backgrounds ── */
+.section--default  { background: var(--color-bg); }
+.section--muted    { background: var(--color-surface); }
+.section--contrast { background: var(--color-surface-2); }
+
+/* ── Inner container ── */
 .section__inner {
-  width: min(var(--max-width), 100% - var(--space-xl));
-  margin-inline: auto;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--section-py) var(--section-px);
 }
 
+/* ── Section header ── */
 .section__head {
-  max-width: 40rem;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
+  text-align: center;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
 }
 
+/* ── Eyebrow ── */
 .section__eyebrow {
-  font-size: 0.75rem;
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-accent);
-  margin: 0 0 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 2px solid var(--color-accent);
 }
 
+/* ── Title ── */
 .section__title {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3vw, 2.35rem);
-  font-weight: 600;
-  line-height: 1.15;
-  margin: 0 0 1rem;
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
   color: var(--color-text);
+  margin-bottom: 0.75rem;
 }
 
+/* ── Intro ── */
 .section__intro {
-  margin: 0;
-  font-size: 1.05rem;
-  line-height: 1.65;
+  font-size: 1rem;
   color: var(--color-text-muted);
-}
-
-.section--muted {
-  background: var(--color-surface-muted);
-}
-
-.section--contrast {
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--color-accent) 12%, var(--color-bg)) 0%,
-    var(--color-bg) 55%
-  );
+  max-width: 52ch;
+  margin: 0 auto;
+  line-height: 1.7;
 }

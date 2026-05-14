@@ -1,94 +1,85 @@
-import React, { useState } from 'react';
-import '../App.css';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './Login.css';
 
-/**
- * Login Component
- * Provides a modern, responsive login form for the superadmin dashboard.
- */
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+export function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error when user starts typing
-    if (error) setError('');
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      return;
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
     }
+  }, [user, navigate]);
 
-    // Log data to console as requested
-    console.log('Login Attempt:', formData);
-    alert('Check console for login details!');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const user = await login(email, password);
+
+      // Only admin and super_admin can access this dashboard
+      if (user.role !== 'admin' && user.role !== 'super_admin') {
+        setError('Access denied. This portal is for admins only.');
+        return;
+      }
+
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const isFormEmpty = !formData.email || !formData.password;
 
   return (
-    <div className="login-container">
+    <div className="admin-login-layout">
       <div className="login-card">
-        <div className="login-header">
-          <h2>Login</h2>
-          <p>Welcome back! Please enter your details.</p>
+        <div className="login-logo">
+          <span>⚡</span>
         </div>
+        <h2>Admin Dashboard</h2>
+        <p className="login-subtitle">Sign in to access the control panel</p>
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          {error && <div className="error-message">{error}</div>}
+        {error && <div className="login-error" role="alert">{error}</div>}
 
+        <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="admin-email">Email Address</label>
             <input
+              id="admin-email"
               type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              className={error && !formData.email ? 'input-error' : ''}
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@gym.com"
             />
           </div>
-
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="admin-password">Password</label>
             <input
+              id="admin-password"
               type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              className={error && !formData.password ? 'input-error' : ''}
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
             />
-            <div className="forgot-password">
-              <a href="#forgot">Forgot Password?</a>
-            </div>
           </div>
-
-          <button 
-            type="submit" 
-            className="submit-btn" 
-            disabled={isFormEmpty}
-          >
-            Login
+          <button type="submit" className="btn-primary" disabled={loading}>
+            {loading ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

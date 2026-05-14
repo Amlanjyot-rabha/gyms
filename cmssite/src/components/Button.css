@@ -1,76 +1,74 @@
+/* ════════════════════════════════
+   Button — premium dark gym style
+   ════════════════════════════════ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-  padding: 0.85rem 1.35rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid transparent;
-  cursor: pointer;
+  padding: 0.78rem 1.85rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
   text-decoration: none;
-  transition:
-    background-color var(--transition),
-    color var(--transition),
-    border-color var(--transition),
-    transform 0.2s ease,
-    box-shadow var(--transition);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  line-height: 1;
 }
+.btn--block { width: 100%; }
 
-.btn:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 3px;
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn--block {
-  width: 100%;
-}
-
+/* ── Primary: solid red ── */
 .btn--primary {
   background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  box-shadow: 0 10px 28px color-mix(in srgb, var(--color-accent) 35%, transparent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+.btn--primary:hover,
+.btn--primary:focus-visible {
+  background: var(--color-accent-dark);
+  border-color: var(--color-accent-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(225,29,72,0.32);
 }
 
-.btn--primary:hover {
-  filter: brightness(1.05);
-}
-
+/* ── Secondary: dark surface ── */
 .btn--secondary {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-3);
   color: var(--color-text);
-  border-color: var(--color-border);
+  border-color: var(--color-border-strong);
 }
-
-.btn--secondary:hover {
-  border-color: var(--color-accent-muted);
-}
-
-.btn--outline {
-  background: transparent;
-  color: var(--color-text);
-  border-color: color-mix(in srgb, var(--color-text) 28%, transparent);
-}
-
-.btn--outline:hover {
+.btn--secondary:hover,
+.btn--secondary:focus-visible {
+  background: var(--color-surface-2);
   border-color: var(--color-accent);
   color: var(--color-accent);
 }
 
-.btn--ghost {
+/* ── Outline: glass ── */
+.btn--outline {
   background: transparent;
-  color: var(--color-text-muted);
-  padding-inline: 0.75rem;
+  color: var(--color-text);
+  border-color: rgba(255,255,255,0.28);
+}
+.btn--outline:hover,
+.btn--outline:focus-visible {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.55);
+  color: #fff;
 }
 
-.btn--ghost:hover {
-  color: var(--color-text);
+/* ── Ghost: text-only ── */
+.btn--ghost {
+  background: transparent;
+  color: var(--color-accent);
+  border-color: transparent;
 }
+.btn--ghost:hover { color: var(--color-accent-dark); }
+
+.btn:disabled { opacity: 0.5; pointer-events: none; }
+.btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }

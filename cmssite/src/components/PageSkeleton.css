@@ -1,5 +1,6 @@
 .skeleton-page {
   min-height: 100vh;
+  background: var(--color-bg);
   padding-bottom: 4rem;
 }
 
@@ -7,41 +8,38 @@
   border-radius: var(--radius-lg);
   background: linear-gradient(
     90deg,
-    var(--color-surface-muted) 0%,
-    color-mix(in srgb, var(--color-text) 6%, var(--color-surface-muted)) 50%,
-    var(--color-surface-muted) 100%
+    var(--color-surface) 0%,
+    var(--color-surface-2) 50%,
+    var(--color-surface) 100%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
 .skeleton--nav {
   height: 4rem;
   margin: 1rem auto;
   width: min(var(--max-width), 100% - 2rem);
+  border-radius: var(--radius-md);
 }
 
 .skeleton--hero {
   height: min(70vh, 520px);
   margin: 0 auto 2rem;
-  width: min(var(--max-width), 100% - 2rem);
+  width: 100%;
+  border-radius: 0;
 }
 
 .skeleton-grid {
   width: min(var(--max-width), 100% - 2rem);
   margin: 0 auto 2rem;
   display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
-.skeleton--block {
-  height: 140px;
-}
-
-.skeleton--block.short {
-  height: 80px;
-  width: 70%;
-}
+.skeleton--block { height: 140px; }
+.skeleton--block.short { height: 80px; }
 
 .skeleton-row {
   width: min(var(--max-width), 100% - 2rem);
@@ -51,15 +49,9 @@
   gap: 1rem;
 }
 
-.skeleton--card {
-  height: 220px;
-}
+.skeleton--card { height: 220px; }
 
 @keyframes skeleton-shimmer {
-  0% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: -100% 0;
-  }
+  0%   { background-position:  100% 0; }
+  100% { background-position: -100% 0; }
 }

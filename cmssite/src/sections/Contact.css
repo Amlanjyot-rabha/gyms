@@ -1,80 +1,78 @@
+/* ════════════════════════════════
+   Contact — info block cards
+   ════════════════════════════════ */
 .contact__grid {
   display: grid;
-  gap: 1.75rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
 }
 
+/* ── Block ── */
 .contact__block {
-  padding: 1.25rem 1.35rem;
-  border-radius: var(--radius-lg);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  background: var(--color-surface-muted);
-}
-
-.contact__h {
-  margin: 0 0 0.5rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.contact__link {
-  display: inline-block;
-  margin-bottom: 1rem;
-  color: var(--color-text);
-  font-weight: 600;
-  text-decoration: none;
-  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 50%, transparent);
-  transition: color var(--transition);
-}
-
-.contact__link:last-child {
-  margin-bottom: 0;
-}
-
-.contact__link:hover {
-  color: var(--color-accent);
-}
-
-.contact__hours {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.35rem;
+  transition: border-color var(--transition);
 }
+.contact__block:hover { border-color: var(--color-accent); }
 
+.contact__block-icon {
+  font-size: 1.35rem;
+  margin-bottom: 0.4rem;
+  line-height: 1;
+}
+.contact__block-icon--mt { margin-top: 1.25rem; }
+
+.contact__h {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-top: 0.1rem;
+}
+.contact__link {
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color var(--transition);
+  word-break: break-all;
+}
+.contact__link:hover { color: var(--color-accent); }
+
+/* ── Hours list ── */
+.contact__hours {
+  list-style: none;
+  padding: 0;
+  margin: 0.2rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
 .contact__hours li {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  font-size: 0.92rem;
+  gap: 0.75rem;
+  font-size: 0.86rem;
   color: var(--color-text-muted);
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--color-border);
 }
-
-.contact__hours li span:first-child {
-  color: var(--color-text);
-  font-weight: 500;
-}
+.contact__hours li:last-child { border-bottom: none; }
 
 .contact__line {
-  margin: 0 0 0.25rem;
+  font-size: 0.92rem;
   color: var(--color-text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.contact__map {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-}
-
-.contact__map-placeholder {
-  min-height: 220px;
-  background:
-    linear-gradient(135deg, var(--color-surface-muted) 0%, var(--color-surface) 100%),
-    radial-gradient(circle at 40% 45%, color-mix(in srgb, var(--color-accent) 25%, transparent) 0%, transparent 55%);
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .contact__grid { grid-template-columns: 1fr; }
 }

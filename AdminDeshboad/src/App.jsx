@@ -1,47 +1,57 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { GymProvider } from './context/GymContext';
-import Layout from './layouts/Layout';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { SidebarLayout } from './layouts/SidebarLayout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Login } from './pages/Login';
+import { Members } from './pages/Members';
+import MemberDetails from './pages/MemberDetails';
+import { Attendance } from './pages/Attendance';
+import AttendanceDetails from './pages/AttendanceDetails';
+import { CMSManager } from './pages/CMSManager';
+import { Settings } from './pages/Settings';
 import Dashboard from './pages/Dashboard';
-import Members from './pages/Members';
-import GymDetails from './pages/GymDetails';
 import Addgyms from './pages/Addgyms';
-import Payments from './pages/Payments';
-import Reports from './pages/Reports';
-import Login from './pages/Login';
-import './App.css';
+import AdminManagement from './pages/AdminManagement';
+import SalesReport from './pages/SalesReport';
 
-/**
- * Main App component.
- * Sets up the BrowserRouter and defines routes for the Gym Dashboard.
- * Each route is wrapped in a common Layout component.
- */
 function App() {
   return (
     <Router>
-      <GymProvider>
-        <Routes>
-          {/* Login route - no layout */}
-          <Route path="/login" element={<Login />} />
+      <Routes>
+        <Route path="/login" element={<Login />} />
 
-          {/* Dashboard routes - with layout */}
-          <Route 
-            path="/*" 
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <SidebarLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="members" element={<Members />} />
+          <Route path="members/:id" element={<MemberDetails />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="attendance/:memberId" element={<AttendanceDetails />} />
+          <Route path="cms" element={<CMSManager />} />
+          <Route path="gym-settings" element={<Addgyms />} />
+
+          {/* Super admin only — ProtectedRoute enforces this at the route level */}
+          <Route
+            path="admins"
             element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/members" element={<Members />} />
-                  <Route path="/members/:gymid" element={<GymDetails />} />
-                  <Route path="/addgym" element={<Addgyms />} />
-                  <Route path="/payments" element={<Payments />} />
-                  <Route path="/reports" element={<Reports />} />
-                </Routes>
-              </Layout>
-            } 
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <AdminManagement />
+              </ProtectedRoute>
+            }
           />
-        </Routes>
-      </GymProvider>
+
+          <Route path="settings" element={<Settings />} />
+          <Route path="sales-report" element={<SalesReport />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Router>
   );
 }

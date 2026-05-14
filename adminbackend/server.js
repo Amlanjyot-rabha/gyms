@@ -2,17 +2,27 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import connectDB from './config/db.js';
 import errorHandler from './middleware/errorMiddleware.js';
 
-// Load env vars
+// Load env vars first, before anything else
 dotenv.config();
 
 // Connect to database
 connectDB();
 
 // Route files
+import authRoutes from './routes/authRoutes.js';
+import membershipRoutes from './routes/membershipRoutes.js';
+import memberRoutes from './routes/memberRoutes.js';
+import attendanceRoutes from './routes/attendanceRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import cmsRoutes from './routes/cmsRoutes.js';
 import gymRoutes from './routes/gymRoutes.js';
+import upload from './middleware/upload.js';
+import seedData from './utils/seeder.js';
+import { startReminderCron } from './cron/reminderCron.js';
 
 const app = express();
 
@@ -20,31 +30,65 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Enable CORS
-app.use(cors());
+// Cookie parser
+app.use(cookieParser());
 
-// Mount routers
+// Enable CORS — all three frontend apps + common Vite dev ports
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',  // admin dashboard (primary)
+    'http://localhost:5174',  // admin dashboard (alternate)
+    'http://localhost:5175',  // member portal
+    'http://localhost:5176',  // CMS site
+    'http://localhost:5177',  // CMS site (alternate)
+    'http://localhost:4173',  // Vite preview
+  ],
+  credentials: true           // Required for HttpOnly cookies cross-origin
+};
+app.use(cors(corsOptions));
+
+// Health check route
 app.get('/', (req, res) => {
-  res.status(200).json({ success: true, message: 'API is running' });
+  res.json({ success: true, message: 'API is running...' });
 });
 
-app.use('/api/gyms', gymRoutes);
+// Mount routers
+app.use('/api/auth', authRoutes);
+app.use('/api/membership', membershipRoutes);
+app.use('/api/member', memberRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/cms', cmsRoutes);
+app.use('/api/gym', gymRoutes);
 
-// Error handler
+// Image upload route
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+  res.status(200).json({
+    success: true,
+    message: 'Image uploaded successfully',
+    url: req.file.path,
+  });
+});
+
+// Error handler (must be last)
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
-const server = app.listen(
-  PORT,
-  console.log(
-    `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
-  )
-);
+// Run seeder after server starts
+const server = app.listen(PORT, async () => {
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  await seedData();
+  
+  // Start automated email reminders
+  startReminderCron();
+});
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
+process.on('unhandledRejection', (err) => {
   console.log(`Error: ${err.message}`);
-  // Close server & exit process
   server.close(() => process.exit(1));
 });

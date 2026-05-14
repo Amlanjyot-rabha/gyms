@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchGymData } from '../data/gymData'
+import axiosInstance from '../utils/axiosInstance'
+import { gymData as defaultData } from '../data/gymData'
 
-/**
- * Single integration point for backend: replace fetchGymData with your API module.
- */
 export function useGymData() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -16,16 +14,29 @@ export function useGymData() {
     let cancelled = false
     setLoading(true)
     setError(null)
-    fetchGymData()
-      .then((payload) => {
-        if (!cancelled) setData(payload)
+    
+    // Fetch CMS from backend API
+    axiosInstance.get('/cms')
+      .then((res) => {
+        if (!cancelled) {
+          // If response is empty or missing fields, merge with defaultData to prevent frontend crashing
+          const backendData = res.data?.data || res.data;
+          // Here we ensure it works using structure expected by UI
+          if (backendData && backendData.hero) {
+             setData(backendData);
+          } else {
+             setData(defaultData);
+          }
+        }
       })
       .catch((e) => {
-        if (!cancelled) setError(e)
+        console.error('Failed to fetch CMS, falling back to local.', e);
+        if (!cancelled) setData(defaultData); // fallback
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
       })
+      
     return () => {
       cancelled = true
     }

@@ -1,23 +1,7 @@
-.skip-link {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  z-index: 100;
-  padding: 0.65rem 1rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  transform: translateY(-150%);
-  transition: transform 0.2s ease;
-}
-
-.skip-link:focus {
-  transform: translateY(0);
-}
+/* HomePage — minimal, only non-conflicting utility classes */
 
 #main-content {
   outline: none;
+  /* Push main content below fixed navbar so nothing hides under it */
+  padding-top: var(--nav-height);
 }
