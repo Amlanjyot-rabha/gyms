@@ -25,10 +25,12 @@ import seedData from './utils/seeder.js';
 import { startReminderCron } from './cron/reminderCron.js';
 
 const app = express();
+
+// Crucial for Render: Allows secure, cross-site cookies to pass through proxies
 app.set('trust proxy', 1);
+
 // Body parser
 app.use(express.json());
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Cookie parser
@@ -40,9 +42,9 @@ const corsOptions = {
     'https://admin-dashboard-pa7w.onrender.com',  // admin dashboard (primary)
     'https://content-management-system-yv4g.onrender.com',  // admin dashboard (alternate)
     'https://member-portal-78vo.onrender.com',  // member portal
-    // Vite preview
   ],
-  credentials: true           // Required for HttpOnly cookies cross-origin
+  credentials: true,           // Required for HttpOnly cookies cross-origin
+  optionsSuccessStatus: 200    // Responds to preflight requests perfectly on mobile/Safari
 };
 app.use(cors(corsOptions));
 
@@ -75,7 +77,8 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 // Error handler (must be last)
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
+// Added fallback port to prevent crashing in development environments
+const PORT = process.env.PORT || 5000;
 
 // Run seeder after server starts
 const server = app.listen(PORT, async () => {
