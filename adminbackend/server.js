@@ -25,9 +25,10 @@ import seedData from './utils/seeder.js';
 import { startReminderCron } from './cron/reminderCron.js';
 
 const app = express();
-
+app.set('trust proxy', 1);
 // Body parser
 app.use(express.json());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Cookie parser
