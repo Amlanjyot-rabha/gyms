@@ -186,7 +186,7 @@ const DEFAULT_CMS_DATA = {
       {
         id: 'p1',
         name: '1 Month',
-        price: '$79',
+        price: '₹79',
         period: '/ month',
         description: 'Essential access for self-directed training.',
         features: ['Floor access', 'Locker amenities', 'App booking'],
@@ -196,7 +196,7 @@ const DEFAULT_CMS_DATA = {
       {
         id: 'p2',
         name: '3 Months',
-        price: '$129',
+        price: '₹129',
         period: '/ month',
         description: 'Coached touchpoints each month + peak-hour priority.',
         features: ['Everything in Base', '2 coach sessions / mo', 'Program reviews'],
@@ -206,7 +206,7 @@ const DEFAULT_CMS_DATA = {
       {
         id: 'p3',
         name: '6 Months',
-        price: '$249',
+        price: '₹249',
         period: '/ month',
         description: 'High-touch training for accelerated goals.',
         features: ['Dedicated coach', 'Nutrition checkpoints', 'Priority scheduling'],
@@ -216,7 +216,7 @@ const DEFAULT_CMS_DATA = {
       {
         id: 'p4',
         name: '12 Months',
-        price: '$399',
+        price: '₹399',
         period: '/ month',
         description: 'Annual commitment with maximum benefits.',
         features: ['All premium features', 'Unlimited coaching', 'VIP priority'],

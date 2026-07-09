@@ -43,7 +43,7 @@ export function Login() {
     <div className="admin-login-layout">
       <div className="login-card">
         <div className="login-logo">
-          <span>⚡</span>
+          <span></span>
         </div>
         <h2>Admin Dashboard</h2>
         <p className="login-subtitle">Sign in to access the control panel</p>

@@ -9,7 +9,7 @@ import axios from 'axios';
  * The frontend NEVER reads, stores, or attaches JWT tokens manually.
  */
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },

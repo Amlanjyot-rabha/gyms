@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import Member from '../models/Member.js';
 import Gym from '../models/Gym.js';
-import { sendReminderEmail } from '../services/emailService.js';
+import { sendReminderNotification } from '../services/notificationService.js';
 
 export const startReminderCron = () => {
   // Run once daily at 8:00 AM
@@ -12,7 +12,7 @@ export const startReminderCron = () => {
       const gym = await Gym.findOne();
       const gymName = gym ? gym.name : 'Our Gym';
 
-      const activeMembers = await Member.find({ status: 'active' }).populate('userId', 'name email');
+      const activeMembers = await Member.find({ status: 'active' }).populate('userId', 'name email phoneNumber');
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -36,12 +36,15 @@ export const startReminderCron = () => {
           }
 
           if (!alreadySentToday) {
-            await sendReminderEmail({
+            await sendReminderNotification({
               email: member.userId.email,
               name: member.userId.name,
               daysLeft: daysLeft,
               expiryDate: member.membershipEnd,
-              gymName: gymName
+              gymName: gymName,
+              phone: member.userId.phoneNumber || 'N/A',
+              joinDate: member.membershipStart,
+              amount: member.price || 0
             });
 
             // Update last reminder sent date to avoid spam

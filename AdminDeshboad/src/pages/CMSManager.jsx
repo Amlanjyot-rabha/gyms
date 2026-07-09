@@ -287,7 +287,7 @@ export function CMSManager() {
         <div className="card">
           <div className="cms-section-header">
             <h2>Membership Plans</h2>
-            <button className="btn-action" onClick={() => addArrayItem('membershipPlans.plans', { id: Date.now(), name: 'New Plan', price: '$0', period: '/ month', features: [], highlighted: false })}>Add Plan</button>
+            <button className="btn-action" onClick={() => addArrayItem('membershipPlans.plans', { id: Date.now(), name: 'New Plan', price: '₹0', period: '/ month', features: [], highlighted: false })}>Add Plan</button>
           </div>
           {cmsData.membershipPlans.plans.map((plan, index) => (
             <div key={plan.id || index} className="cms-item-card">
@@ -308,6 +308,22 @@ export function CMSManager() {
                     updateNestedField('membershipPlans.plans', newPlans);
                   }} />
                 </div>
+              </div>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea value={plan.description || ''} onChange={(e) => {
+                  const newPlans = [...cmsData.membershipPlans.plans];
+                  newPlans[index].description = e.target.value;
+                  updateNestedField('membershipPlans.plans', newPlans);
+                }} />
+              </div>
+              <div className="form-group">
+                <label>Features (one per line)</label>
+                <textarea value={(plan.features || []).join('\n')} onChange={(e) => {
+                  const newPlans = [...cmsData.membershipPlans.plans];
+                  newPlans[index].features = e.target.value.split('\n').filter(Boolean);
+                  updateNestedField('membershipPlans.plans', newPlans);
+                }} />
               </div>
               <button className="btn-action btn-danger" onClick={() => removeArrayItem('membershipPlans.plans', index)}>Remove Plan</button>
             </div>
@@ -429,13 +445,82 @@ export function CMSManager() {
           ))}
         </div>
 
+        {/* LOGO MANAGEMENT */}
+        <div className="card">
+          <div className="cms-section-header">
+            <h2>Logo Management</h2>
+          </div>
+          
+          <div className="form-group">
+            <label>Logo Type</label>
+            <select 
+              value={cmsData.branding?.logo?.mode || 'text'} 
+              onChange={(e) => updateNestedField('branding.logo.mode', e.target.value)}
+            >
+              <option value="image">Image Logo</option>
+              <option value="text">Text Logo</option>
+            </select>
+          </div>
+
+          {cmsData.branding?.logo?.mode === 'image' && (
+            <div className="form-group">
+              <label>Logo Image</label>
+              <div className="cms-upload-row">
+                {cmsData.branding.logo.imageSrc && (
+                  <img 
+                    className="cms-preview logo-preview" 
+                    src={cmsData.branding.logo.imageSrc} 
+                    alt="Logo Preview" 
+                  />
+                )}
+                <input type="file" onChange={(e) => 
+                  handleImageUpload(e, 'branding.logo.imageSrc')
+                } />
+                {cmsData.branding.logo.imageSrc && (
+                  <button
+                    className="btn-action btn-danger"
+                    onClick={() => updateNestedField('branding.logo.imageSrc', '')}
+                  >
+                    Remove Logo
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {cmsData.branding?.logo?.mode === 'text' && (
+            <>
+              <div className="form-group">
+                <label>Wordmark</label>
+                <input
+                  type="text"
+                  value={cmsData.branding.logo.wordmark || ''}
+                  onChange={(e) => updateNestedField('branding.logo.wordmark', e.target.value)}
+                  placeholder="Main logo text (e.g. GYM)"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Tagline (Optional)</label>
+                <input
+                  type="text"
+                  value={cmsData.branding.logo.tagline || ''}
+                  onChange={(e) => updateNestedField('branding.logo.tagline', e.target.value)}
+                  placeholder="Smaller secondary text"
+                />
+              </div>
+            </>
+          )}
+
+        </div>
+
         {/* CONTACT SECTION */}
         <div className="card">
           <div className="cms-section-header">
             <h2>Contact Info</h2>
           </div>
           <div className="form-group">
-            <label>Email</label>
+            <label>Business Name</label>
             <input
               type="text"
               value={cmsData.branding.gymName}

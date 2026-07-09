@@ -3,6 +3,8 @@ import axiosInstance from '../utils/axiosInstance';
 import { Button } from './Button';
 import './AuthModal.css';
 
+const MEMBER_PORTAL_LOGIN_URL = (import.meta.env.VITE_MEMBER_PORTAL_URL || 'http://localhost:5175').replace(/\/$/, '');
+
 export function AuthModal({ isOpen, onClose, selectedPlan }) {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ export function AuthModal({ isOpen, onClose, selectedPlan }) {
       
       setTimeout(() => {
         // Redirect to member portal login page
-        window.location.href = 'http://localhost:5175/login';
+        window.location.href = `${MEMBER_PORTAL_LOGIN_URL}/login`;
       }, 2500);
       
     } catch (err) {

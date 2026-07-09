@@ -109,7 +109,9 @@
 }
 
 .table-container {
+  width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   background: var(--surface-2);
@@ -148,6 +150,23 @@
 
 .admin-table tbody tr:hover {
   background: rgba(37, 99, 235, 0.02);
+}
+
+.detail-value {
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .admin-table {
+    min-width: 100%;
+  }
+  .admin-table th,
+  .admin-table td {
+    white-space: nowrap;
+  }
 }
 
 .badge {
@@ -216,6 +235,22 @@
 .btn-action:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn-spinner {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: btn-spin 0.75s linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .btn-outline {

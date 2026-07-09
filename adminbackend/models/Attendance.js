@@ -19,17 +19,20 @@ const AttendanceSchema = new mongoose.Schema({
   },
   location: {
     latitude: {
-      type: Number,
-      required: true
+      type: Number
     },
     longitude: {
-      type: Number,
-      required: true
+      type: Number
     }
   },
   isWithinRadius: {
     type: Boolean,
-    required: true
+    default: false
+  },
+  status: {
+    type: String,
+    enum: ['approved', 'pending', 'rejected'],
+    default: 'approved'
   },
   duration: {
     type: Number, // in minutes

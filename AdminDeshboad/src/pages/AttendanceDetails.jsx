@@ -72,13 +72,25 @@ export default function AttendanceDetails() {
     return '#ef4444'; // red
   };
 
-  const formatDate = (dateString) => {
+  const formatDateOnly = (dateString) => {
+    if (!dateString) return '--';
     const date = new Date(dateString);
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'long' });
     const year = date.getFullYear();
-    const time = date.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
-    return `${day} ${month} ${year}, ${time}`;
+    return `${day} ${month} ${year}`;
+  };
+
+  const formatTime = (dateString) => {
+    if (!dateString) return '--';
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('default', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getLogStatus = (log) => {
+    if (log.checkIn && !log.checkOut) return 'Checked In';
+    if (log.checkIn && log.checkOut) return 'Checked Out';
+    return log.status || 'Pending';
   };
 
   return (
@@ -112,7 +124,7 @@ export default function AttendanceDetails() {
               </div>
               <div>
                 <label style={{ color: '#6b7280', fontSize: '0.875rem' }}>Email</label>
-                <p style={{ margin: '5px 0 0 0', fontWeight: '500' }}>
+                <p className="detail-value" style={{ margin: '5px 0 0 0', fontWeight: '500' }}>
                   {member?.userId?.email || 'N/A'}
                 </p>
               </div>
@@ -191,18 +203,33 @@ export default function AttendanceDetails() {
                   <thead>
                     <tr>
                       <th>Date</th>
+                      <th>Entry Time</th>
+                      <th>Exit Time</th>
                       <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAttendance.map(log => (
+                    {filteredAttendance.map(log => {
+                      const status = getLogStatus(log);
+                      return (
                       <tr key={log._id}>
-                        <td>{formatDate(log.date)}</td>
+                        <td>{formatDateOnly(log.date)}</td>
+                        <td>{formatTime(log.checkIn || log.date)}</td>
                         <td>
-                          <span className="badge active">Present</span>
+                          {log.checkOut ? (
+                            formatTime(log.checkOut)
+                          ) : (
+                            <span style={{ color: '#6b7280', fontStyle: 'italic' }}>Pending</span>
+                          )}
+                        </td>
+                        <td>
+                          <span className={`badge ${status === 'Checked In' ? 'active' : status === 'Checked Out' ? 'cancelled' : 'expired'}`}>
+                            {status}
+                          </span>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

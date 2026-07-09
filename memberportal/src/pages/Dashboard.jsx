@@ -19,6 +19,7 @@ export function Dashboard() {
   const [actionMsg, setActionMsg] = useState('');
   const [actionType, setActionType] = useState('info'); // 'info' | 'success' | 'error'
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProcessingAttendance, setIsProcessingAttendance] = useState(false);
 
   // close menu when clicking outside
   useEffect(() => {
@@ -88,7 +89,7 @@ export function Dashboard() {
       const status = err.response?.status;
       console.log('[DASHBOARD] Status code:', status);
 
-      if (status === 401 || status === 403) {
+      if (status === 401) {
         console.log('[DASHBOARD] Auth error detected, calling invalidateSession()');
         invalidateSession();
         return;
@@ -124,15 +125,19 @@ export function Dashboard() {
   };
 
   const handleMarkAttendance = () => {
+    if (isProcessingAttendance) return;
+
     if (profile?.status !== 'active') {
       showMessage('You need an active membership to mark attendance.', 'error');
       return;
     }
 
+    safeSetState(setIsProcessingAttendance)(true);
     showMessage('Fetching your location...', 'info');
 
     if (!navigator.geolocation) {
       showMessage('Geolocation is not supported by your browser.', 'error');
+      safeSetState(setIsProcessingAttendance)(false);
       return;
     }
 
@@ -155,16 +160,39 @@ export function Dashboard() {
           if (!mountedRef.current) return;
 
           const status = err.response?.status;
-          if (status === 401 || status === 403) {
+          if (status === 401) {
             invalidateSession();
             return;
           }
           showMessage(err.response?.data?.message || 'Failed to mark attendance.', 'error');
+        } finally {
+          safeSetState(setIsProcessingAttendance)(false);
         }
       },
-      () => {
+      async (error) => {
         if (!mountedRef.current) return;
-        showMessage('Unable to retrieve your location. Please allow location access.', 'error');
+        
+        try {
+          // error.code 1 = PERMISSION_DENIED
+          if (error.code === 1) {
+            showMessage('Unable to retrieve your location. Please allow location access.', 'error');
+            return;
+          }
+
+          // error.code 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+          if (error.code === 2 || error.code === 3) {
+            showMessage('Failed to retrieve location due to a technical error.', 'error');
+          } else {
+            showMessage('An unknown error occurred while retrieving your location.', 'error');
+          }
+        } finally {
+          safeSetState(setIsProcessingAttendance)(false);
+        }
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 6000,
+        maximumAge: 0
       }
     );
   };

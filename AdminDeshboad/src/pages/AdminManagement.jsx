@@ -10,6 +10,7 @@ const AdminManagement = () => {
     name: '',
     email: '',
     password: '',
+    phoneNumber: '',
   });
 
   const fetchAdmins = async () => {
@@ -39,7 +40,7 @@ const AdminManagement = () => {
       await axiosInstance.post('/admin/admins', formData);
       alert('Admin added successfully!');
       setShowAddForm(false);
-      setFormData({ name: '', email: '', password: '' });
+      setFormData({ name: '', email: '', password: '', phoneNumber: '' });
       fetchAdmins();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to add admin');
@@ -92,6 +93,15 @@ const AdminManagement = () => {
                     type="password" 
                     value={formData.password} 
                     onChange={(e) => setFormData({...formData, password: e.target.value})} 
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input 
+                    type="text" 
+                    value={formData.phoneNumber} 
+                    onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})} 
                     required 
                   />
                 </div>

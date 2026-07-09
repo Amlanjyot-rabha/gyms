@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import Member from '../models/Member.js';
 import Gym from '../models/Gym.js';
-import { sendWelcomeEmail } from '../services/emailService.js';
+import { sendWelcomeNotification } from '../services/notificationService.js';
 
 const getCookieOptions = () => ({
   httpOnly: true,
@@ -185,14 +185,15 @@ export const register = async (req, res, next) => {
     const gym = await Gym.findOne();
     const gymName = gym ? gym.name : 'Our Gym';
 
-    await sendWelcomeEmail({
+    await sendWelcomeNotification({
       email: user.email,
       name: user.name,
       plan: '1 Month', // Default plan assigned on registration
       joinDate: new Date(),
       expiryDate: new Date(), // It starts expired
       amount: 0,
-      gymName
+      gymName,
+      phone: user.phone || ''
     });
 
     res.status(201).json({

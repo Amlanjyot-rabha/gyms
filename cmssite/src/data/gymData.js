@@ -188,7 +188,7 @@ export const gymData = {
       {
         id: 'p1',
         name: 'Base',
-        price: '$79',
+        price: '₹79',
         period: '/ month',
         description: 'Essential access for self-directed training.',
         features: ['Floor access', 'Locker amenities', 'App booking'],
@@ -198,7 +198,7 @@ export const gymData = {
       {
         id: 'p2',
         name: 'Plus',
-        price: '$129',
+        price: '₹129',
         period: '/ month',
         description: 'Coached touchpoints each month + peak-hour priority.',
         features: ['Everything in Base', '2 coach sessions / mo', 'Program reviews'],
@@ -208,7 +208,7 @@ export const gymData = {
       {
         id: 'p3',
         name: 'Private',
-        price: '$249',
+        price: '₹249',
         period: '/ month',
         description: 'High-touch training for accelerated goals.',
         features: ['Dedicated coach', 'Nutrition checkpoints', 'Priority scheduling'],
@@ -238,8 +238,10 @@ export const gymData = {
       ],
     },
     address: {
-      label: 'Location',
+      label: 'Address',
       lines: ['218 Harbor Row', 'Chicago, IL'],
+      addressText: '218 Harbor Row, Chicago, IL',
+      googleMapLink: 'https://www.google.com/maps/search/?api=1&query=218+Harbor+Row+Chicago+IL',
     },
     mapEmbedAriaLabel: 'Map showing gym location',
   },

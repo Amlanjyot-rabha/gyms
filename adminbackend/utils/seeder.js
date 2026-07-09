@@ -5,6 +5,7 @@ const seedData = async () => {
   try {
     // 1. Seed Super Admin
     const superAdminExists = await User.findOne({ role: 'super_admin' });
+    console.log('[SEEDER] superAdminExists:', superAdminExists ? `${superAdminExists.email} (${superAdminExists._id})` : 'none');
     if (!superAdminExists) {
       await User.create({
         name: 'Super Admin',

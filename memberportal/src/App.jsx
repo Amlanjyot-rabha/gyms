@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { ChangePassword } from './pages/ChangePassword';
@@ -15,40 +15,44 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 function App() {
   return (
     <ErrorBoundary>
-      <Router>
+      <Router basename="/memberportal">
         <Routes>
-        {/* Public */}
-        <Route path="/login" element={<Login />} />
 
-        {/* Member-only protected routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/change-password"
-          element={
-            <ProtectedRoute>
-              <ChangePassword />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/attendance"
-          element={
-            <ProtectedRoute>
-              <Attendance />
-            </ProtectedRoute>
-          }
-        />
+          {/* Public */}
+          <Route path="/login" element={<Login />} />
 
-        {/* Default redirect */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+          {/* Member-only protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/attendance"
+            element={
+              <ProtectedRoute>
+                <Attendance />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+        </Routes>
       </Router>
     </ErrorBoundary>
   );

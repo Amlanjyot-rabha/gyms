@@ -10,8 +10,8 @@ export const markAttendance = async (req, res, next) => {
     const { location } = req.body;
     const userId = req.user.id;
 
-    const lat = location?.lat;
-    const lng = location?.lng;
+    let lat = location?.lat;
+    let lng = location?.lng;
 
     if (!lat || !lng) {
       return res.status(400).json({ success: false, message: 'Latitude and longitude are required' });
@@ -24,13 +24,12 @@ export const markAttendance = async (req, res, next) => {
       return res.status(403).json({ success: false, message: 'Active membership required to mark attendance' });
     }
 
-    // 2. Gym check-in logic
+    // 2. Gym check-in logic and Distance check
     const gym = await Gym.findOne();
     if (!gym) {
       return res.status(404).json({ success: false, message: 'Gym location not configured' });
     }
 
-    // 3. Distance check
     const isWithinRadius = gym.isWithinRadius(lat, lng);
     if (!isWithinRadius) {
       return res.status(403).json({ success: false, message: 'You are not within the gym radius' });
@@ -51,11 +50,9 @@ export const markAttendance = async (req, res, next) => {
     const attendance = await Attendance.create({
       userId,
       date: new Date(),
-      location: {
-        latitude: lat,
-        longitude: lng
-      },
-      isWithinRadius: true
+      location: { latitude: lat, longitude: lng },
+      isWithinRadius: true,
+      status: 'approved'
     });
 
     res.status(201).json({

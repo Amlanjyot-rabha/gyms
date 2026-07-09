@@ -3,6 +3,9 @@ import './Contact.css'
 
 export function Contact({ contact }) {
   const { contactInfo, openingHours, address } = contact ?? {}
+  const addressLines = address?.lines ?? (address?.addressText ? [address.addressText] : [])
+  const addressLabel = address?.label ?? 'Address'
+  const addressLink = address?.googleMapLink
 
   return (
     <Section
@@ -50,10 +53,26 @@ export function Contact({ contact }) {
         {address && (
           <div className="contact__block">
             <div className="contact__block-icon" aria-hidden>📍</div>
-            <h3 className="contact__h">{address.label ?? 'Location'}</h3>
-            {(address.lines ?? []).map((line, i) => (
-              <p key={i} className="contact__line">{line}</p>
-            ))}
+            <h3 className="contact__h">{addressLabel}</h3>
+            {addressLink ? (
+              <a
+                className="contact__address-link"
+                href={addressLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="contact__address-icon" aria-hidden="true">📍</span>
+                <span className="contact__address-copy">
+                  {addressLines.map((line, i) => (
+                    <span key={i} className="contact__line">{line}</span>
+                  ))}
+                </span>
+              </a>
+            ) : (
+              addressLines.map((line, i) => (
+                <p key={i} className="contact__line">{line}</p>
+              ))
+            )}
           </div>
         )}
       </div>

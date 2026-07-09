@@ -8,7 +8,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: 9999;
   height: var(--nav-height);
   /* Always slightly dark so it's readable on any hero image */
   background: rgba(8,8,16,0.6);
@@ -66,9 +66,26 @@
   margin-top: 1px;
 }
 .nav__logo-img {
-  height: 34px;
+  max-height: 48px; /* Max height for logo in navbar */
+  max-width: 200px; /* Max width for logo */
   width: auto;
-  object-fit: contain;
+  height: auto;
+  object-fit: contain; /* Maintain aspect ratio */
+  vertical-align: middle;
+  transition: transform 0.2s ease; /* Smooth hover effect */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .nav__logo-img {
+    max-height: 40px;
+    max-width: 160px;
+  }
+}
+
+/* Hover effect */
+.nav__logo-img:hover {
+  transform: scale(1.05);
 }
 
 /* ── Desktop links ── */
@@ -174,6 +191,8 @@
 /* ── Hamburger ── */
 .nav__toggle {
   display: none;
+  position: relative;
+  z-index: 11001;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -204,6 +223,8 @@
 .nav__mobile {
   /* hidden by default — shown only on mobile via media query */
   display: none;
+  position: relative;
+  z-index: 10000;
   flex-direction: column;
   overflow: hidden;
   max-height: 0;
@@ -252,8 +273,12 @@
   .nav__links         { display: none; }
   .nav__toggle        { display: flex; }
   .nav__mobile        { display: flex; }
-  .nav__status        { display: none; } /* too cramped on tablet */
-  .nav__actions { margin-left: auto; }
+  .nav__status        { display: inline-flex; }
+  .nav__actions {
+    margin-left: auto;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
 
 /* Mobile: also hide desktop CTA */

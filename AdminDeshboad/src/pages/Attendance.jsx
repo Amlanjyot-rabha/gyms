@@ -8,6 +8,11 @@ export function Attendance() {
   const [attendance, setAttendance] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const today = new Date();
+    // Use local date string YYYY-MM-DD to avoid timezone shifting
+    return new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+  });
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -27,17 +32,21 @@ export function Attendance() {
     navigate(`/attendance/${memberId}`);
   };
 
-  // Group attendance by member and calculate stats
+  // Filter attendance by selected date and group by member
   const getMemberStats = () => {
     const memberMap = new Map();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const targetDate = new Date(selectedDate);
+    targetDate.setHours(0, 0, 0, 0);
 
     attendance.forEach(log => {
+      const logDate = new Date(log.date);
+      logDate.setHours(0, 0, 0, 0);
+
+      // Only include logs for the selected date
+      if (logDate.getTime() !== targetDate.getTime()) return;
+
       const memberId = log.userId?._id;
       if (!memberId) return;
-
-      const logDate = new Date(log.date);
 
       if (!memberMap.has(memberId)) {
         memberMap.set(memberId, {
@@ -46,23 +55,24 @@ export function Attendance() {
           email: log.userId?.email || 'N/A',
           records: [],
           lastActivity: null,
-          isPresentToday: false
+          status: 'Pending'
         });
       }
 
       const member = memberMap.get(memberId);
       member.records.push(log);
 
-      // Check if attendance is today
-      const logDay = new Date(logDate);
-      logDay.setHours(0, 0, 0, 0);
-      if (logDay.getTime() === today.getTime()) {
-        member.isPresentToday = true;
-      }
-
-      // Update last activity if this is the latest
-      if (!member.lastActivity || logDate > new Date(member.lastActivity)) {
+      // Determine the latest activity and status
+      if (!member.lastActivity || new Date(log.date) > new Date(member.lastActivity)) {
         member.lastActivity = log.date;
+        
+        if (log.checkIn && !log.checkOut) {
+          member.status = 'Checked In';
+        } else if (log.checkIn && log.checkOut) {
+          member.status = 'Checked Out';
+        } else {
+          member.status = log.status || 'Pending';
+        }
       }
     });
 
@@ -107,7 +117,14 @@ export function Attendance() {
 
       <div className="content-card">
         <div className="card-header">
-          <div className="search-filters">
+          <div className="search-filters" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="search-input"
+              style={{ width: '180px' }}
+            />
             <input
               type="text"
               placeholder="Search by name or email..."
@@ -131,7 +148,7 @@ export function Attendance() {
                 <tr>
                   <th>Member Name</th>
                   <th>Email</th>
-                  <th>Status (Today)</th>
+                  <th>Status</th>
                   <th>Last Activity</th>
                   <th>Actions</th>
                 </tr>
@@ -142,8 +159,8 @@ export function Attendance() {
                     <td style={{ fontWeight: '500' }}>{member.name}</td>
                     <td style={{ color: '#6b7280' }}>{member.email}</td>
                     <td>
-                      <span className={`badge ${member.isPresentToday ? 'active' : 'expired'}`}>
-                        {member.isPresentToday ? 'Present' : 'Absent'}
+                      <span className={`badge ${member.status === 'Checked In' ? 'active' : member.status === 'Checked Out' ? 'cancelled' : 'expired'}`}>
+                        {member.status}
                       </span>
                     </td>
                     <td>{formatDate(member.lastActivity)}</td>
@@ -161,7 +178,7 @@ export function Attendance() {
                 {filteredMembers.length === 0 && (
                   <tr>
                     <td colSpan="5" style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
-                      No members found matching your criteria.
+                      No attendance records found for the selected date.
                     </td>
                   </tr>
                 )}

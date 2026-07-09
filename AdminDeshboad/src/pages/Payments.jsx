@@ -34,7 +34,7 @@ const Payments = () => {
                 <strong>John Doe</strong>
                 <span>Monthly Membership</span>
               </div>
-              <div className="trans-amount success">$45.00</div>
+              <div className="trans-amount success">₹45.00</div>
               <div className="trans-date">2026-03-15</div>
             </div>
             <div className="transaction-item">
@@ -42,7 +42,7 @@ const Payments = () => {
                 <strong>Jane Smith</strong>
                 <span>Yearly Membership</span>
               </div>
-              <div className="trans-amount success">$450.00</div>
+              <div className="trans-amount success">₹450.00</div>
               <div className="trans-date">2026-03-14</div>
             </div>
           </div>

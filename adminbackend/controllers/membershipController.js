@@ -2,8 +2,8 @@ import Member from '../models/Member.js';
 import User from '../models/User.js';
 import Gym from '../models/Gym.js';
 import Attendance from '../models/Attendance.js';
-import { sendWelcomeEmail, sendRenewalEmail } from '../services/emailService.js';
-import sendWhatsAppMessage from '../utils/whatsapp.js';
+import { sendRenewalNotification } from '../services/notificationService.js';
+import { calculateMembershipExpiry, getPlanDurationInMonths } from '../services/membershipService.js';
 
 // @desc    Buy/Activate membership
 // @route   POST /api/membership/buy
@@ -20,20 +20,12 @@ export const buyMembership = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Gym not properly configured yet' });
     }
 
-    const planDurationMap = {
-      '1 Month': 1,
-      '3 Months': 3,
-      '6 Months': 6,
-      '12 Months': 12
-    };
-
-    if (!planDurationMap[membershipType]) {
+    if (!getPlanDurationInMonths(membershipType)) {
       return res.status(400).json({ success: false, message: 'Invalid membership type' });
     }
 
     const membershipStart = new Date();
-    const membershipEnd = new Date(membershipStart);
-    membershipEnd.setMonth(membershipEnd.getMonth() + planDurationMap[membershipType]);
+    const membershipEnd = calculateMembershipExpiry(membershipStart, membershipType);
 
     // Find the member record created during registration or an existing one
     let membership = await Member.findOne({ userId });
@@ -79,24 +71,21 @@ export const buyMembership = async (req, res, next) => {
         amount: price || 0,
         expiryDate: membershipEnd,
         joinDate: membershipStart,
-        gymName: gym.name || 'Our Gym'
+        gymName: gym.name || 'Our Gym',
+        phone: user.phoneNumber || ''
       };
 
       // Since the logic above overwrites `membership` or creates it, we can just send Welcome or Renewal based on if it's their first time.
       // But we don't have a strict flag. Let's send Welcome if they just registered, Renewal otherwise.
       // A quick heuristic: if their old membership was expired, it's a renewal. If they didn't have one, it's a welcome.
       // The old logic above doesn't distinguish easily. Let's just send Renewal since they are buying a membership from the portal.
-      await sendRenewalEmail(emailPayload);
+      await sendRenewalNotification(emailPayload);
 
     } catch (err) {
       console.log('Email could not be sent: ', err.message);
     }
 
-    // Send WhatsApp (Placeholder)
-    await sendWhatsAppMessage({
-      phone: 'user-phone-num', // Assuming user phone not in schema directly but we'd pass it
-      message: `Hi ${user.name}, your gym membership is active! It expires on ${membershipEnd.toDateString()}`
-    });
+    // Removed Placeholder WhatsApp Message since notificationService handles it
 
     res.status(200).json({
       success: true,

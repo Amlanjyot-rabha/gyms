@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { SidebarLayout } from './layouts/SidebarLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
@@ -15,7 +15,7 @@ import SalesReport from './pages/SalesReport';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/dashboard">
       <Routes>
         <Route path="/login" element={<Login />} />
 

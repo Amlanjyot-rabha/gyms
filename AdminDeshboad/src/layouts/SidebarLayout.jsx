@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiUsers, FiCalendar, FiBarChart2, FiFileText, FiLogOut, FiGrid, FiMapPin, FiShield, FiChevronDown, FiKey } from 'react-icons/fi';
+import { FiUsers, FiCalendar, FiBarChart2, FiFileText, FiLogOut, FiGrid, FiMapPin, FiShield, FiChevronDown, FiKey, FiX } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../utils/axiosInstance';
 import './SidebarLayout.css';
@@ -89,7 +89,7 @@ export function SidebarLayout() {
         <button
           id="gym-status-toggle"
           type="button"
-          className={`gym-status-toggle ${gymStatus === 'open' ? 'gym-status-toggle--open' : 'gym-status-toggle--closed'}`}
+          className={`gym-status-toggle gym-status-toggle--topbar ${gymStatus === 'open' ? 'gym-status-toggle--open' : 'gym-status-toggle--closed'}`}
           onClick={handleStatusToggle}
           disabled={statusLoading}
           title={gymStatus === 'open' ? 'Click to mark gym as Closed' : 'Click to mark gym as Open'}
@@ -163,6 +163,14 @@ export function SidebarLayout() {
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-brand">
           <h2>GymAdmin</h2>
+          <button
+            type="button"
+            className="sidebar-close-btn"
+            aria-label="Close menu"
+            onClick={() => setIsOpen(false)}
+          >
+            <FiX size={18} />
+          </button>
         </div>
         <nav className="sidebar-nav">
           <NavLink to="/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
@@ -189,6 +197,17 @@ export function SidebarLayout() {
           <NavLink to="/sales-report" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <FiBarChart2 /> Sales Report
           </NavLink>
+          <button
+            type="button"
+            className="nav-item gym-status-toggle gym-status-toggle--sidebar"
+            onClick={handleStatusToggle}
+            disabled={statusLoading}
+            title={gymStatus === 'open' ? 'Click to mark gym as Closed' : 'Click to mark gym as Open'}
+            aria-label={`Gym is ${gymStatus}. Toggle status.`}
+          >
+            <span className="gym-status-dot" aria-hidden />
+            {statusLoading ? 'Saving…' : gymStatus === 'open' ? 'Open Now' : 'Closed'}
+          </button>
         </nav>
         <div className="sidebar-footer">
           <button className="nav-item btn-logout" onClick={handleLogout}>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
+const CMS_SITE_URL = (import.meta.env.VITE_CMS_SITE_URL || 'http://localhost:5174').replace(/\/$/, '');
+
 /**
  * Login page for Member Portal.
  *
@@ -51,7 +53,7 @@ export function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-logo">💪</div>
+        <div className="login-logo"></div>
         <h2>Member Portal</h2>
         <p className="login-hint">Sign in to access your membership</p>
 
@@ -91,7 +93,7 @@ export function Login() {
 
         <p className="login-footer">
           Not a member yet?{' '}
-          <a href="http://localhost:5176" target="_blank" rel="noopener noreferrer">
+          <a href={CMS_SITE_URL} target="_blank" rel="noopener noreferrer">
             Join our gym
           </a>
         </p>

@@ -14,6 +14,9 @@ const Addgyms = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [waStatus, setWaStatus] = useState('disconnected');
+  const [waQrCode, setWaQrCode] = useState(null);
+  const [waNumber, setWaNumber] = useState(null);
 
   useEffect(() => {
     const fetchGymSettings = async () => {
@@ -40,6 +43,26 @@ const Addgyms = () => {
     fetchGymSettings();
   }, []);
 
+  useEffect(() => {
+    let interval;
+    const fetchWaStatus = async () => {
+      try {
+        const res = await axiosInstance.get('/admin/whatsapp/status');
+        if (res.data) {
+          setWaStatus(res.data.status);
+          setWaQrCode(res.data.qrCode);
+          setWaNumber(res.data.connectedNumber);
+        }
+      } catch (error) {
+        console.error('Failed to fetch WA status');
+      }
+    };
+    
+    fetchWaStatus();
+    interval = setInterval(fetchWaStatus, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -58,6 +81,36 @@ const Addgyms = () => {
       alert(error.response?.data?.message || 'Failed to update gym settings');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const connectWhatsApp = async () => {
+    setWaStatus('initializing');
+    try {
+      await axiosInstance.post('/admin/whatsapp/connect');
+    } catch (e) {
+      alert('Failed to initialize WhatsApp connection');
+    }
+  };
+
+  const disconnectWhatsApp = async () => {
+    try {
+      await axiosInstance.post('/admin/whatsapp/disconnect');
+      setWaStatus('disconnected');
+      setWaQrCode(null);
+      setWaNumber(null);
+    } catch (e) {
+      alert('Failed to disconnect');
+    }
+  };
+
+  const sendWaTestMessage = async () => {
+    if (!waNumber) return;
+    try {
+      await axiosInstance.post('/admin/whatsapp/test', { phone: waNumber });
+      alert('Test message sent!');
+    } catch (e) {
+      alert('Failed to send test message');
     }
   };
 
@@ -119,6 +172,50 @@ const Addgyms = () => {
             {saving ? 'Saving...' : 'Update Settings'}
           </button>
         </form>
+      </div>
+
+      <div className="content-card" style={{ marginTop: '2rem' }}>
+        <h2 style={{ marginBottom: '1.5rem', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>WhatsApp Integration</h2>
+        <div className="whatsapp-section">
+          {waStatus === 'disconnected' && (
+            <div className="text-center" style={{ padding: '2rem' }}>
+              <p style={{ marginBottom: '1rem', color: 'var(--muted)' }}>Status: Not Connected</p>
+              <button className="btn-action btn-success" onClick={connectWhatsApp}>Connect WhatsApp</button>
+            </div>
+          )}
+          
+          {waStatus === 'initializing' && (
+            <div className="text-center" style={{ padding: '2rem' }}>
+              <p>Initializing WhatsApp client... Please wait.</p>
+            </div>
+          )}
+          
+          {waStatus === 'qr_ready' && waQrCode && (
+            <div className="text-center" style={{ padding: '2rem' }}>
+              <p style={{ marginBottom: '1rem' }}>Scan this QR code with your WhatsApp mobile app to connect.</p>
+              <img src={waQrCode} alt="WhatsApp QR Code" style={{ width: '250px', height: '250px', margin: '0 auto', display: 'block', borderRadius: '8px' }} />
+            </div>
+          )}
+          
+          {waStatus === 'connected' && (
+            <div className="text-center" style={{ padding: '2rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+                <span style={{ width: '12px', height: '12px', backgroundColor: '#22c55e', borderRadius: '50%', display: 'inline-block' }}></span>
+                <strong style={{ fontSize: '1.1rem' }}>Connected</strong>
+              </div>
+              <p style={{ marginBottom: '1.5rem', color: 'var(--muted)' }}>Phone Number: {waNumber}</p>
+              
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                <button className="btn-action" onClick={sendWaTestMessage} style={{ backgroundColor: '#25D366' }}>
+                  Send Test Message
+                </button>
+                <button className="btn-action" onClick={disconnectWhatsApp} style={{ backgroundColor: '#ef4444' }}>
+                  Disconnect
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

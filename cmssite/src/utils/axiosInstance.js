@@ -7,7 +7,7 @@ import axios from 'axios';
  * No authentication is required — no tokens, no cookies.
  */
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },

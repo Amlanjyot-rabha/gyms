@@ -45,6 +45,34 @@
 }
 .contact__link:hover { color: var(--color-accent); }
 
+.contact__address-link {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.contact__address-link:hover {
+  color: var(--color-accent);
+}
+
+.contact__address-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  font-size: 1rem;
+  color: var(--color-accent);
+}
+
+.contact__address-copy {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 /* ── Hours list ── */
 .contact__hours {
   list-style: none;

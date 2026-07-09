@@ -35,20 +35,22 @@ export function Membership({ membershipPlans, onPlanSelect }) {
               </p>
             </div>
 
-            {plan.description && (
-              <p className="plan__desc">{plan.description}</p>
-            )}
+            <p className="plan__desc">
+              {plan.description || 'Standard membership with access to basic gym amenities.'}
+            </p>
 
-            {(plan.features ?? []).length > 0 && (
-              <ul className="plan__features">
-                {plan.features.map((f, i) => (
-                  <li key={i} className="plan__feature">
-                    <span className="plan__check" aria-hidden>✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            )}
+            <ul className="plan__features">
+              {((plan.features ?? []).length > 0 ? plan.features : [
+                'Full gym access',
+                'Locker room privileges',
+                'App booking'
+              ]).map((f, i) => (
+                <li key={i} className="plan__feature">
+                  <span className="plan__check" aria-hidden>✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
 
             <Button
               variant={plan.highlighted ? 'primary' : 'secondary'}

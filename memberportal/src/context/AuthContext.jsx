@@ -13,7 +13,7 @@ const authBasePath = '/auth/member';
  *   isAuthError       — true when session invalid/expired
  *   login()           — Authenticate and set user
  *   logout()          — Clear session
- *   invalidateSession() — Mark session as invalid (for 401/403 handling)
+ *   invalidateSession() — Mark session as invalid (for 401 handling)
  *
  * IMPORTANT: This is the ONLY place that manages auth state transitions.
  * Components react to auth state but do NOT manage auth transitions independently.
@@ -103,7 +103,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * Centralized session invalidation — called when any component receives 401/403.
+   * Centralized session invalidation — called when any component receives 401.
    * This is the ONLY way auth errors should be handled.
    * Prevents multiple components from fighting over auth state.
    */

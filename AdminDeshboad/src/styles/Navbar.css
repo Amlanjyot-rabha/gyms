@@ -11,7 +11,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 1200;
 }
 
 .logo {
@@ -96,7 +96,7 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 1001;
+  z-index: 1300;
 }
 
 .hamburger-menu .bar {
