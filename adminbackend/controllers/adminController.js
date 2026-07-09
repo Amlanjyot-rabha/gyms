@@ -2,7 +2,11 @@ import Member from '../models/Member.js';
 import User from '../models/User.js';
 import Attendance from '../models/Attendance.js';
 import Gym from '../models/Gym.js';
-import { sendWelcomeEmail, sendRenewalEmail } from '../services/emailService.js';
+import crypto from 'crypto';
+import { sendWelcomeNotification, sendRenewalNotification } from '../services/notificationService.js';
+import { calculateMembershipExpiry, calculateRenewalExpiry, getPlanDurationInMonths } from '../services/membershipService.js';
+import * as whatsappService from '../services/whatsappService.js';
+import { getComputedMemberStatus } from '../utils/memberStatus.js';
 
 // @desc    Add member manually (Admin)
 // @route   POST /api/admin/members
@@ -11,7 +15,7 @@ export const addMember = async (req, res, next) => {
   let createdUser = null;
 
   try {
-    const { name, email, password, membershipType, price } = req.body;
+    const { name, email, membershipType, price, phoneNumber, membershipStart: customMembershipStart, joiningFee } = req.body;
 
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -19,33 +23,36 @@ export const addMember = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
+    const tempPassword = crypto.randomBytes(4).toString('hex');
+
     // Create user first
     createdUser = await User.create({
       name,
       email,
-      password,
+      password: tempPassword,
+      phoneNumber,
       role: 'member'
     });
 
     console.log('[LINKAGE] Created User:', createdUser.email, 'userId:', createdUser._id.toString());
 
-    const planDurationMap = {
-      '1 Month': 1,
-      '3 Months': 3,
-      '6 Months': 6,
-      '12 Months': 12
-    };
+    if (!getPlanDurationInMonths(membershipType)) {
+      return res.status(400).json({ success: false, message: 'Invalid membership type' });
+    }
 
-    const duration = planDurationMap[membershipType] || 1;
-    const membershipStart = new Date();
-    const membershipEnd = new Date(membershipStart);
-    membershipEnd.setMonth(membershipEnd.getMonth() + duration);
+    const membershipStart = customMembershipStart ? new Date(customMembershipStart) : new Date();
+    const membershipEnd = calculateMembershipExpiry(membershipStart, membershipType);
+
+    const parsedJoiningFee = Number(joiningFee) || 0;
+    const parsedPrice = Number(price) || 0;
+    const totalPaid = parsedPrice + parsedJoiningFee;
 
     // Create member with correct userId linkage
     const membership = await Member.create({
       userId: createdUser._id,  // ObjectId reference to User
       membershipType: membershipType || '1 Month',
-      price: price || 0,
+      price: parsedPrice,
+      joiningFee: parsedJoiningFee,
       membershipStart,
       membershipEnd,
       status: 'active',
@@ -58,15 +65,19 @@ export const addMember = async (req, res, next) => {
     const gym = await Gym.findOne();
     const gymName = gym ? gym.name : 'Our Gym';
 
-    // Send Welcome Email
-    await sendWelcomeEmail({
+    // Send Welcome Notification
+    await sendWelcomeNotification({
       email: createdUser.email,
       name: createdUser.name,
       plan: membershipType || '1 Month',
       joinDate: membershipStart,
       expiryDate: membershipEnd,
-      amount: price || 0,
-      gymName
+      amount: parsedPrice,
+      joiningFee: parsedJoiningFee,
+      totalPaid: totalPaid,
+      gymName,
+      phone: createdUser.phoneNumber || '',
+      tempPassword
     });
 
     // Account created — member must log in separately to get their own session.
@@ -117,12 +128,41 @@ export const cancelMembership = async (req, res, next) => {
   }
 };
 
+// @desc    Delete member permanently
+// @route   DELETE /api/admin/members/:id
+// @access  Private/Admin
+export const deleteMember = async (req, res, next) => {
+  try {
+    const member = await Member.findById(req.params.id);
+
+    if (!member) {
+      return res.status(404).json({ success: false, message: 'Membership not found' });
+    }
+
+    // Delete associated User and Attendance records
+    if (member.userId) {
+      await Attendance.deleteMany({ userId: member.userId });
+      await User.findByIdAndDelete(member.userId);
+    }
+
+    // Delete the Member record
+    await Member.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Member deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Get all members
 // @route   GET /api/admin/members
 // @access  Private/Admin
 export const getMembers = async (req, res, next) => {
   try {
-    const members = await Member.find().populate('userId', 'name email').sort({ createdAt: -1 });
+    const members = await Member.find().populate('userId', 'name email phoneNumber').sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -138,7 +178,7 @@ export const getMembers = async (req, res, next) => {
 // @access  Private/Admin
 export const getAllAttendance = async (req, res, next) => {
   try {
-    const attendance = await Attendance.find().populate('userId', 'name email').sort({ date: -1 });
+    const attendance = await Attendance.find().populate('userId', 'name email phoneNumber').sort({ date: -1 });
 
     res.status(200).json({
       success: true,
@@ -154,7 +194,11 @@ export const getAllAttendance = async (req, res, next) => {
 // @access  Private/SuperAdmin
 export const addAdmin = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phoneNumber } = req.body;
+
+    if (!phoneNumber) {
+      return res.status(400).json({ success: false, message: 'Please provide a phone number.' });
+    }
 
     const normalAdminCount = await User.countDocuments({ role: 'admin' });
 
@@ -171,6 +215,7 @@ export const addAdmin = async (req, res, next) => {
       name,
       email,
       password,
+      phoneNumber,
       role: 'admin'
     });
 
@@ -180,7 +225,8 @@ export const addAdmin = async (req, res, next) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        phoneNumber: user.phoneNumber
       }
     });
 
@@ -234,25 +280,12 @@ export const renewMembership = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Member not found' });
     }
 
-    const planDurationMap = {
-      '1 Month': 30,
-      '3 Months': 90,
-      '6 Months': 180,
-      '12 Months': 365
-    };
-    const durationDays = planDurationMap[plan] || 30;
+    if (!getPlanDurationInMonths(plan)) {
+      return res.status(400).json({ success: false, message: 'Invalid membership type' });
+    }
 
     const currentExpiry = new Date(member.membershipEnd);
-    const today = new Date();
-
-    let newExpiry;
-    if (member.status === 'active' && currentExpiry > today) {
-      newExpiry = new Date(currentExpiry);
-      newExpiry.setDate(newExpiry.getDate() + durationDays);
-    } else {
-      newExpiry = new Date(today);
-      newExpiry.setDate(newExpiry.getDate() + durationDays);
-    }
+    const newExpiry = calculateRenewalExpiry(currentExpiry, plan);
 
     member.membershipEnd = newExpiry;
     member.status = 'active';
@@ -267,13 +300,15 @@ export const renewMembership = async (req, res, next) => {
     const gymName = gym ? gym.name : 'Our Gym';
 
     if (user && user.email) {
-      await sendRenewalEmail({
+      await sendRenewalNotification({
         email: user.email,
         name: user.name,
         plan: plan,
         amount: member.price || 0, // In reality, we'd fetch price from gym or body
         expiryDate: newExpiry,
-        gymName
+        gymName,
+        phone: user.phoneNumber || '',
+        joinDate: member.membershipStart
       });
     }
 
@@ -291,9 +326,11 @@ export const renewMembership = async (req, res, next) => {
 // @access  Private/Admin
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const totalMembers = await Member.countDocuments();
-    const activeMembers = await Member.countDocuments({ status: 'active' });
-    const expiredMembers = await Member.countDocuments({ status: 'expired' });
+    const members = await Member.find().lean();
+    const totalMembers = members.length;
+
+    const activeMembers = members.filter((member) => getComputedMemberStatus(member) === 'active').length;
+    const expiredMembers = members.filter((member) => getComputedMemberStatus(member) === 'expired').length;
     const totalAttendance = await Attendance.countDocuments();
 
     res.status(200).json({
@@ -318,4 +355,28 @@ export const getAdmins = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+// WhatsApp Integration
+export const getWhatsAppStatus = (req, res) => { 
+  res.status(200).json(whatsappService.getWhatsAppStatus()); 
+};
+
+export const connectWhatsApp = (req, res) => { 
+  whatsappService.connectWhatsApp(); 
+  res.status(200).json({ success: true, message: 'Connecting...' }); 
+};
+
+export const disconnectWhatsApp = async (req, res) => { 
+  await whatsappService.disconnectWhatsApp(); 
+  res.status(200).json({ success: true, message: 'Disconnected' }); 
+};
+
+export const sendWhatsAppTestMessage = async (req, res) => { 
+  try { 
+    await whatsappService.sendTestMessage(req.body.phone); 
+    res.status(200).json({ success: true, message: 'Test message sent' }); 
+  } catch (error) { 
+    res.status(500).json({ success: false, message: error.message }); 
+  } 
 };

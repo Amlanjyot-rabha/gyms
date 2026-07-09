@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
+import { getComputedMemberStatus } from '../utils/memberStatus';
 import './AdminStyles.css';
 
 export function Members() {
@@ -11,12 +12,15 @@ export function Members() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [membershipPlans, setMembershipPlans] = useState([]);
+  const [isAddingMember, setIsAddingMember] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
+    phoneNumber: '',
     membershipType: '',
+    membershipStart: '',
     price: 0,
+    joiningFee: 0,
   });
 
   const fetchMembers = async () => {
@@ -62,6 +66,10 @@ export function Members() {
 
   const handleAddMember = async (e) => {
     e.preventDefault();
+    if (isAddingMember) return;
+    
+    setIsAddingMember(true);
+
     try {
       await axiosInstance.post('/admin/members', formData);
       alert('Member added successfully!');
@@ -72,35 +80,44 @@ export function Members() {
       setFormData({ 
         name: '', 
         email: '', 
-        password: '', 
+        phoneNumber: '',
+        membershipStart: '',
         membershipType: defaultPlan ? defaultPlan.name : '',
-        price: defaultPlan ? parseInt(defaultPlan.price.replace(/[^0-9]/g, '')) : 0
+        price: defaultPlan ? parseInt(defaultPlan.price.replace(/[^0-9]/g, '')) : 0,
+        joiningFee: 0
       });
       fetchMembers();
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Failed to add member';
       alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsAddingMember(false);
     }
   };
 
   const getRemainingDays = (expiry) => {
     const diff = new Date(expiry) - new Date();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days; // Allow negative days for expired check
+  };
+
+  const getDisplayRemainingDays = (expiry) => {
+    const days = getRemainingDays(expiry);
     return days > 0 ? days : 0;
   };
 
+  const getComputedStatus = (member) => getComputedMemberStatus(member);
+
   const getDisplayStatus = (member) => {
-    const remainingDays = getRemainingDays(member.membershipEnd);
-    if (member.status === 'expired') return 'expired';
-    if (remainingDays <= 5) return 'expiring-soon';
-    return member.status;
+    const status = getComputedStatus(member);
+    return status === 'expiring' ? 'expiring-soon' : status;
   };
 
   const getStatusLabel = (member) => {
-    const remainingDays = getRemainingDays(member.membershipEnd);
-    if (member.status === 'expired') return 'Expired';
-    if (remainingDays <= 5 && member.status === 'active') return 'Expiring Soon';
-    return member.status.charAt(0).toUpperCase() + member.status.slice(1);
+    const status = getComputedStatus(member);
+    if (status === 'expired') return 'Expired';
+    if (status === 'expiring') return 'Expiring Soon';
+    return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
   const formatDate = (dateString) => {
@@ -112,9 +129,9 @@ export function Members() {
   };
 
   const getRowStyle = (member) => {
-    const remainingDays = getRemainingDays(member.membershipEnd);
-    if (member.status === 'expired') return { backgroundColor: '#fee2e2' };
-    if (remainingDays <= 5 && member.status === 'active') return { backgroundColor: '#fef3c7' };
+    const status = getComputedStatus(member);
+    if (status === 'expired') return { backgroundColor: '#fee2e2' };
+    if (status === 'expiring') return { backgroundColor: '#fef3c7' };
     return {};
   };
 
@@ -124,10 +141,9 @@ export function Members() {
       (member.userId?.name || '').toLowerCase().includes(searchLower) ||
       (member.userId?.email || '').toLowerCase().includes(searchLower);
 
+    const computedStatus = getComputedStatus(member);
     const matchesFilter =
-      statusFilter === 'all' ||
-      (statusFilter === 'active' && member.status === 'active') ||
-      (statusFilter === 'expired' && member.status === 'expired');
+      statusFilter === 'all' || computedStatus === statusFilter;
 
     return matchesSearch && matchesFilter;
   });
@@ -164,12 +180,19 @@ export function Members() {
               />
             </div>
             <div className="form-group">
-              <label>Password</label>
+              <label>Phone Number</label>
               <input 
-                type="password" 
-                value={formData.password} 
-                onChange={(e) => setFormData({...formData, password: e.target.value})} 
-                required 
+                type="text" 
+                value={formData.phoneNumber} 
+                onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})} 
+              />
+            </div>
+            <div className="form-group">
+              <label>Membership Start Date (Optional)</label>
+              <input 
+                type="date" 
+                value={formData.membershipStart} 
+                onChange={(e) => setFormData({...formData, membershipStart: e.target.value})} 
               />
             </div>
             <div className="form-group">
@@ -189,7 +212,32 @@ export function Members() {
                 ))}
               </select>
             </div>
-            <button type="submit" className="btn-action">Create Member</button>
+
+
+           <div className="form-group">
+              <label>Joining Fee</label>
+              <input
+                type="number"
+                value={formData.joiningFee ?? ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    joiningFee: e.target.value === ''
+                      ? ''
+                      : parseInt(e.target.value)
+                  })
+                }
+              />
+           </div>
+
+
+            <div className="form-group" style={{ marginBottom: '15px' }}>
+              <strong>Total Price: ₹{(formData.price || 0) + (formData.joiningFee || 0)}</strong>
+            </div>
+            <button type="submit" className="btn-action" disabled={isAddingMember}>
+              {isAddingMember && <span className="btn-spinner" aria-hidden="true" />}
+              {isAddingMember ? 'Adding Member...' : 'Add Member'}
+            </button>
           </form>
         </div>
       )}
@@ -221,6 +269,7 @@ export function Members() {
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
+            <option value="expiring">Expiring</option>
             <option value="expired">Expired</option>
           </select>
           <span style={{ color: '#6b7280', fontSize: '0.9rem' }}>
@@ -234,6 +283,7 @@ export function Members() {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Phone</th>
                   <th>Email</th>
                   <th>Status</th>
                   <th>Plan</th>
@@ -246,6 +296,7 @@ export function Members() {
                 {filteredMembers.map(member => (
                   <tr key={member._id} style={getRowStyle(member)}>
                     <td style={{ fontWeight: '500' }}>{member.userId?.name || 'Unknown'}</td>
+                    <td style={{ color: '#6b7280' }}>{member.userId?.phoneNumber || 'N/A'}</td>
                     <td style={{ color: '#6b7280' }}>{member.userId?.email || 'N/A'}</td>
                     <td>
                       <span className={`badge ${getDisplayStatus(member)}`}>
@@ -254,7 +305,7 @@ export function Members() {
                     </td>
                     <td>{member.membershipType}</td>
                     <td>{formatDate(member.membershipEnd)}</td>
-                    <td>{getRemainingDays(member.membershipEnd)} days</td>
+                    <td>{getDisplayRemainingDays(member.membershipEnd)} days</td>
                     <td>
                       <button
                         className="btn-action"
