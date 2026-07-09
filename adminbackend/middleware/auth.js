@@ -3,8 +3,8 @@ import User from '../models/User.js';
 
 const getCookieOptions = () => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: true,
+  sameSite:'none',
   path: '/'
 });
 
