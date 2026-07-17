@@ -6,7 +6,12 @@ export const PLAN_DURATION_IN_MONTHS = {
 };
 
 export const calculateMembershipExpiry = (startDate, plan) => {
-  const months = PLAN_DURATION_IN_MONTHS[plan] || null;
+  const normalizedPlan = (plan || '').toString().trim().toLowerCase();
+  const planKey = Object.keys(PLAN_DURATION_IN_MONTHS).find(
+    key => key.toLowerCase() === normalizedPlan
+  );
+  const months = planKey ? PLAN_DURATION_IN_MONTHS[planKey] : null;
+
   if (!months) {
     throw new Error(`Invalid membership plan: ${plan}`);
   }

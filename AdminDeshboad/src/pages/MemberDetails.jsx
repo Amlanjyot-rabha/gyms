@@ -27,8 +27,10 @@ function MemberDetails() {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString || dateString === 'N/A') return 'N/A';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'N/A';
+    
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'long' });
     const year = date.getFullYear();

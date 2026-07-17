@@ -287,18 +287,27 @@ export function CMSManager() {
         <div className="card">
           <div className="cms-section-header">
             <h2>Membership Plans</h2>
-            <button className="btn-action" onClick={() => addArrayItem('membershipPlans.plans', { id: Date.now(), name: 'New Plan', price: '₹0', period: '/ month', features: [], highlighted: false })}>Add Plan</button>
+            <button className="btn-action" onClick={() => addArrayItem('membershipPlans.plans', { id: Date.now(), name: '', price: '₹0', period: '/ month', features: [], highlighted: false })}>Add Plan</button>
           </div>
           {cmsData.membershipPlans.plans.map((plan, index) => (
             <div key={plan.id || index} className="cms-item-card">
               <div className="form-row">
                 <div className="form-group">
                   <label>Plan Name</label>
-                  <input value={plan.name} onChange={(e) => {
-                    const newPlans = [...cmsData.membershipPlans.plans];
-                    newPlans[index].name = e.target.value;
-                    updateNestedField('membershipPlans.plans', newPlans);
-                  }} />
+                  <select 
+                    value={plan.name} 
+                    onChange={(e) => {
+                      const newPlans = [...cmsData.membershipPlans.plans];
+                      newPlans[index].name = e.target.value;
+                      updateNestedField('membershipPlans.plans', newPlans);
+                    }}
+                  >
+                    <option value="">Select Duration</option>
+                    <option value="1 Month">1 Month</option>
+                    <option value="3 Months">3 Months</option>
+                    <option value="6 Months">6 Months</option>
+                    <option value="12 Months">12 Months</option>
+                  </select>
                 </div>
                 <div className="form-group">
                   <label>Price</label>

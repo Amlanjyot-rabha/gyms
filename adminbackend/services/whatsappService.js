@@ -18,7 +18,20 @@ const initializeClient = () => {
   client = new Client({
     authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
     puppeteer: {
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu',
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--disable-features=MemorySaverMode',
+            '--memory-pressure-off'
+        ],
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
     }
   });
 
