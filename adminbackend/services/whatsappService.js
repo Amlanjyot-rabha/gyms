@@ -18,7 +18,7 @@ const initializeClient = () => {
   client = new Client({
     authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
     puppeteer: {
-        headless: true,
+        headless: 'new',
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
