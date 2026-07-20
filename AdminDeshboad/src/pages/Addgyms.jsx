@@ -17,6 +17,7 @@ const Addgyms = () => {
   const [waStatus, setWaStatus] = useState('disconnected');
   const [waQrCode, setWaQrCode] = useState(null);
   const [waNumber, setWaNumber] = useState(null);
+  const [waInputPhone, setWaInputPhone] = useState('');
 
   useEffect(() => {
     const fetchGymSettings = async () => {
@@ -85,9 +86,13 @@ const Addgyms = () => {
   };
 
   const connectWhatsApp = async () => {
+    if (!waInputPhone.trim()) {
+      alert('Please enter a phone number to connect.');
+      return;
+    }
     setWaStatus('initializing');
     try {
-      await axiosInstance.post('/admin/whatsapp/connect');
+      await axiosInstance.post('/admin/whatsapp/connect', { phone: waInputPhone });
     } catch (e) {
       alert('Failed to initialize WhatsApp connection');
     }
@@ -180,6 +185,16 @@ const Addgyms = () => {
           {waStatus === 'disconnected' && (
             <div className="text-center" style={{ padding: '2rem' }}>
               <p style={{ marginBottom: '1rem', color: 'var(--muted)' }}>Status: Not Connected</p>
+              <div style={{ marginBottom: '1rem' }}>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="Enter WhatsApp Phone Number" 
+                  value={waInputPhone}
+                  onChange={(e) => setWaInputPhone(e.target.value)}
+                  style={{ maxWidth: '300px', margin: '0 auto', display: 'block' }}
+                />
+              </div>
               <button className="btn-action btn-success" onClick={connectWhatsApp}>Connect WhatsApp</button>
             </div>
           )}
@@ -192,8 +207,10 @@ const Addgyms = () => {
           
           {waStatus === 'qr_ready' && waQrCode && (
             <div className="text-center" style={{ padding: '2rem' }}>
-              <p style={{ marginBottom: '1rem' }}>Scan this QR code with your WhatsApp mobile app to connect.</p>
-              <img src={waQrCode} alt="WhatsApp QR Code" style={{ width: '250px', height: '250px', margin: '0 auto', display: 'block', borderRadius: '8px' }} />
+              <p style={{ marginBottom: '1rem', fontSize: '1.2rem' }}>Please enter this 8-digit pairing code in your WhatsApp mobile app:</p>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', letterSpacing: '4px', margin: '1.5rem 0', color: 'var(--primary)' }}>
+                {waQrCode}
+              </div>
             </div>
           )}
           

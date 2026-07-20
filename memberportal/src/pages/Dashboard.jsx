@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../utils/axiosInstance';
+import { LocationPermissionGuard } from '../components/LocationPermissionGuard';
 import './Dashboard.css';
 
 /**
@@ -20,6 +21,9 @@ export function Dashboard() {
   const [actionType, setActionType] = useState('info'); // 'info' | 'success' | 'error'
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProcessingAttendance, setIsProcessingAttendance] = useState(false);
+  // LocationPermissionGuard self-manages its own visibility; this flag lets Dashboard
+  // remount/reset it if needed (e.g. after a hard logout/login cycle).
+  const [showLocationGuard, setShowLocationGuard] = useState(true);
 
   // close menu when clicking outside
   useEffect(() => {
@@ -267,6 +271,7 @@ export function Dashboard() {
   const isCheckedIn = isToday && !hasCheckedOutToday;
 
   return (
+    <>
     <div className="dashboard-container">
       <header className="dashboard-header">
         <div>
@@ -427,5 +432,13 @@ export function Dashboard() {
         </section>
       </div>
     </div>
+
+      {/* Location permission guard — auto-hides when permission is already granted */}
+      {showLocationGuard && (
+        <LocationPermissionGuard
+          onClose={() => setShowLocationGuard(false)}
+        />
+      )}
+    </>
   );
 }

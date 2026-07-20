@@ -1,0 +1,25 @@
+{
+  "watch": [
+    "server.js",
+    "routes/**",
+    "controllers/**",
+    "models/**",
+    "middleware/**",
+    "services/**",
+    "utils/**",
+    "config/**",
+    "cron/**"
+  ],
+  "ignore": [
+    "auth_info_baileys/**",
+    "auth_info_baileys",
+    ".baileys_auth/**",
+    ".baileys_auth",
+    ".wwebjs_auth/**",
+    ".wwebjs_cache/**",
+    "node_modules/**",
+    "*.log"
+  ],
+  "ext": "js,json",
+  "delay": 500
+}

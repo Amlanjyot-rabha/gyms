@@ -98,3 +98,6 @@ jspm_packages/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+adminbackend/.wwebjs_auth/
+dminbackend/.wwebjs_auth/

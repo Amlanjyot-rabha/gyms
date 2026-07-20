@@ -188,7 +188,7 @@ function MemberDetails() {
                 </div>
                 <div>
                   <p style={{ margin: '0 0 6px', color: '#6b7280' }}>Phone</p>
-                  <p style={{ margin: 0 }}>{member.userId?.phone || 'N/A'}</p>
+                  <p style={{ margin: 0 }}>{member.userId?.phone || member.userId?.phoneNumber || 'N/A'}</p>
                 </div>
                 <div>
                   <p style={{ margin: '0 0 6px', color: '#6b7280' }}>Plan</p>

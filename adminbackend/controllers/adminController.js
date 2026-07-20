@@ -362,9 +362,16 @@ export const getWhatsAppStatus = (req, res) => {
   res.status(200).json(whatsappService.getWhatsAppStatus()); 
 };
 
-export const connectWhatsApp = (req, res) => { 
-  whatsappService.connectWhatsApp(); 
-  res.status(200).json({ success: true, message: 'Connecting...' }); 
+export const connectWhatsApp = async (req, res) => { 
+  try {
+    if (!req.body.phone) {
+      return res.status(400).json({ success: false, message: 'Phone number is required for pairing' });
+    }
+    await whatsappService.connectWhatsApp(req.body.phone); 
+    res.status(200).json({ success: true, message: 'Connecting...' }); 
+  } catch (error) {
+    res.status(500).json({ success:'yeah here is the problem', message: error.message });
+  }
 };
 
 export const disconnectWhatsApp = async (req, res) => { 

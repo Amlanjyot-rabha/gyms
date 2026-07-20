@@ -42,6 +42,7 @@ const corsOptions = {
     'https://admin-dashboard-pa7w.onrender.com',  // admin dashboard (primary)
     'https://content-management-system-yv4g.onrender.com',  // admin dashboard (alternate)
     'https://member-portal-78vo.onrender.com',  // member portal
+    'http://localhost:5173'
   ],
   credentials: true,           // Required for HttpOnly cookies cross-origin
   optionsSuccessStatus: 200    // Responds to preflight requests perfectly on mobile/Safari

@@ -8,7 +8,31 @@
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "auth_info_baileys/**",
+      "auth_info_baileys",
+      ".baileys_auth/**",
+      ".baileys_auth",
+      ".wwebjs_auth/**",
+      ".wwebjs_cache/**"
+    ],
+    "watch": [
+      "server.js",
+      "routes/**",
+      "controllers/**",
+      "models/**",
+      "middleware/**",
+      "services/**",
+      "utils/**",
+      "config/**",
+      "cron/**"
+    ],
+    "ext": "js,json",
+    "delay": 500
+  },
   "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc13",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -23,6 +47,7 @@
     "multer-storage-cloudinary": "^4.0.0",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.7",
+    "pino": "^10.3.1",
     "qrcode": "^1.5.4",
     "stripe": "^15.8.0",
     "validator": "^13.12.0",

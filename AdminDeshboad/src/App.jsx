@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import Addgyms from './pages/Addgyms';
 import AdminManagement from './pages/AdminManagement';
 import SalesReport from './pages/SalesReport';
+import WhatsAppConnectManager from './pages/WhatsAppConnectManager';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
 
           <Route path="settings" element={<Settings />} />
           <Route path="sales-report" element={<SalesReport />} />
+          <Route path="whatsapp-setup" element={<WhatsAppConnectManager />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
